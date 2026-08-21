@@ -1,0 +1,12 @@
+streamlit>=1.40
+numpy>=1.26
+pandas>=2.2
+plotly>=5.24
+opencv-python-headless>=4.10
+ultralytics>=8.3
+numpy
+opencv-python-headless
+pandas
+plotly
+streamlit
+ultralytics

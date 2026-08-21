@@ -1,6 +1,6 @@
-# [Project name]
+# AI Smart Traffic Management
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Python prototype that detects vehicles, estimates lane queues, and compares adaptive traffic signal policies in a Streamlit control room.
 
 ## Run & Operate
 
@@ -10,6 +10,11 @@ _Replace the heading above with the project's name, and this line with one sente
 - `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
 - Required env: `DATABASE_URL` — Postgres connection string
+
+## Run the Python dashboard
+
+- `streamlit run app.py --server.port 5000 --server.address 0.0.0.0 --server.headless true` — run the traffic control room
+- `python -m compileall -q traffic_ai app.py` — validate Python syntax
 
 ## Stack
 
@@ -22,15 +27,24 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `app.py` — Streamlit dashboard entry point
+- `traffic_ai/detection.py` — YOLOv8n + ByteTrack wrapper and MP4 iterator
+- `traffic_ai/density_estimator.py` — lane ROI assignment, weighted density, and queue estimation
+- `traffic_ai/signal_controller.py` — fixed-time and rule-based policies
+- `traffic_ai/rl_agent.py` — tabular Q-learning policy
+- `traffic_ai/simulator.py` and `traffic_ai/evaluate.py` — benchmark simulation and metrics
+- `traffic_ai/demo_data.py` — deterministic synthetic tracks used for the first-run demo
+- `requirements.txt` — Python runtime dependencies
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The dashboard starts with deterministic synthetic traffic so it is useful before a video file or model weights are available.
+- YOLO and OpenCV are imported lazily by the detection module; dashboard-only usage does not need to initialize the model.
+- The simulator is intentionally lightweight and uses extracted weighted densities as demand inputs rather than requiring SUMO.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+Users can tune four approach demands, inspect vehicle counts, weighted density, occupancy, queue length, and signal decisions, then benchmark fixed-time, rule-based, and Q-learning controllers.
 
 ## User preferences
 
@@ -38,7 +52,8 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- The Python tools module must be installed before pip packages in this Nix-based environment.
+- YOLO video mode requires a readable MP4 and downloads/loads `yolov8n.pt` on first model use.
 
 ## Pointers
 
