@@ -1,14 +1,13 @@
-"""2030 Quantum-Edge AI Smart Traffic Management Control Room.
+"""AI-Based Smart Traffic Management System.
 
-Final Year Capstone Project - Intelligent Transportation Systems (ITS) & Computer Vision.
+Final Year Engineering Capstone Project.
 Features:
-- Real-time Hardware Webcam & Video Computer Vision (YOLOv8 + ByteTrack)
-- Configurable Road Geometry (4-Way Intersection, T-Junction, Dual Carriageway)
-- Red Light Runner & Over-Speeding Violation Detection Engine (e-Challan)
-- Webster's Minimum Delay Optimum Cycle Formulation & Deep-MARL Signal Controllers
-- V2X (Vehicle-to-Everything) Telemetry & Green Light Optimal Speed Advisory (GLOSA)
-- 1-Click Emergency Vehicle Preemption (EVP) Green-Wave Corridor
-- Urban Carbon Abatement & Eco-Footprint Telemetry
+- Real-Time Computer Vision Vehicle Speed Radar (YOLOv8 + ByteTrack)
+- Prominent Vehicle Speed Badges (km/h) & Trajectory Tracking
+- Configurable Road Geometry (4-Way Intersection, T-Junction, Dual-Carriageway)
+- Webster's Minimum Delay Formulation & Deep-MARL Signal Optimization
+- Automated Law Enforcement (Red Light Runner & Over-Speeding e-Challan)
+- Emergency Vehicle Preemption (EVP) Green Wave
 """
 
 import os
@@ -38,10 +37,10 @@ from traffic_ai.v2x_system import V2XSystem
 from traffic_ai.violation_detector import ViolationDetector
 
 # ---------------------------------------------------------
-# Page Configuration & Futuristic 2030 Styling
+# Page Configuration & Clean Enterprise Styling
 # ---------------------------------------------------------
 st.set_page_config(
-    page_title="2030 AI Smart Traffic Control Room",
+    page_title="AI Smart Traffic Management & Speed Radar",
     page_icon="🚦",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -50,67 +49,102 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap');
-
-    .cyber-title {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 2.1rem;
-        font-weight: 900;
-        letter-spacing: 2px;
-        background: linear-gradient(90deg, #00f2fe 0%, #4facfe 50%, #00ff88 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 0px;
+    /* Clean Enterprise Dark Theme */
+    .main {
+        background-color: #090d16;
     }
-    .cyber-subtitle {
-        font-family: 'Rajdhani', sans-serif;
-        font-size: 1.05rem;
-        color: #94a3b8;
-        letter-spacing: 1.5px;
-        margin-top: -6px;
-        margin-bottom: 14px;
-        text-transform: uppercase;
+    .block-container {
+        padding-top: 1.8rem;
+        padding-bottom: 2.5rem;
+        max-width: 95%;
     }
-    .telemetry-ribbon {
-        background: rgba(14, 22, 38, 0.85);
-        border: 1px solid rgba(0, 242, 254, 0.3);
-        border-radius: 8px;
-        padding: 8px 16px;
+    
+    /* Header Typography */
+    .app-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 18px;
-        font-family: 'Rajdhani', sans-serif;
-        font-size: 0.92rem;
-        box-shadow: 0 0 15px rgba(0, 242, 254, 0.1);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding-bottom: 12px;
+        margin-bottom: 20px;
     }
-    .telemetry-item {
-        color: #cbd5e1;
-    }
-    .telemetry-val {
-        color: #00ff88;
+    .app-title {
+        font-size: 1.75rem;
         font-weight: 700;
+        color: #f8fafc;
+        letter-spacing: -0.5px;
+        margin: 0;
     }
-    .telemetry-val-cyan {
-        color: #00f2fe;
+    .app-subtitle {
+        font-size: 0.90rem;
+        color: #94a3b8;
+        margin-top: 2px;
+    }
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(16, 185, 129, 0.12);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.3);
+        padding: 5px 12px;
+        border-radius: 9999px;
+        font-size: 0.82rem;
+        font-weight: 600;
+    }
+    .status-badge-evp {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+        border: 1px solid #ef4444;
+        padding: 5px 12px;
+        border-radius: 9999px;
+        font-size: 0.82rem;
         font-weight: 700;
+        animation: pulse 1.5s infinite;
     }
-    .evp-badge {
-        background: rgba(255, 34, 85, 0.2);
-        border: 1px solid #ff2255;
-        color: #ff3366;
-        padding: 4px 10px;
-        border-radius: 4px;
-        font-weight: 800;
+
+    /* Metric Card Styling */
+    .metric-card {
+        background: #111827;
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-bottom: 12px;
     }
-    .academic-banner {
-        background: linear-gradient(90deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
-        border-left: 4px solid #38bdf8;
-        padding: 10px 14px;
-        border-radius: 6px;
-        margin-bottom: 14px;
-        font-size: 0.9rem;
-        color: #e2e8f0;
+    .metric-label {
+        font-size: 0.80rem;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+    .metric-value {
+        font-size: 1.65rem;
+        font-weight: 700;
+        color: #f8fafc;
+        margin-top: 4px;
+    }
+    .metric-value-green {
+        color: #10b981;
+    }
+    .metric-value-cyan {
+        color: #38bdf8;
+    }
+    .metric-sub {
+        font-size: 0.78rem;
+        color: #64748b;
+        margin-top: 2px;
+    }
+
+    /* Clean Section Containers */
+    .feed-container {
+        background: #111827;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 16px;
     }
     </style>
     """,
@@ -136,153 +170,91 @@ if "yolo_detector" not in st.session_state:
     st.session_state.yolo_detector = None
 
 # ---------------------------------------------------------
-# Header & 2030 Telemetry Ribbon
-# ---------------------------------------------------------
-st.markdown('<div class="cyber-title">AI SMART TRAFFIC MANAGEMENT 2030</div>', unsafe_allow_html=True)
-st.markdown(
-    '<div class="cyber-subtitle">Computer Vision · Webster Optimization · V2X Connected Autonomy · Deep-MARL</div>',
-    unsafe_allow_html=True,
-)
-
-v2x = st.session_state.v2x_system
-evp_status_html = (
-    f'<span class="evp-badge">🚨 EVP CORRIDOR ACTIVE: {v2x.evp_lane}</span>'
-    if v2x.evp_active
-    else '<span style="color:#00ff88; font-weight:700;">STANDBY (NORMAL)</span>'
-)
-
-st.markdown(
-    f"""
-    <div class="telemetry-ribbon">
-        <div class="telemetry-item">NODE: <span class="telemetry-val-cyan">METRO-GRID #2030-ALPHA</span></div>
-        <div class="telemetry-item">V2X MESH: <span class="telemetry-val">5G-NR V2X 5.9GHz</span></div>
-        <div class="telemetry-item">AI MODEL: <span class="telemetry-val">YOLOv8n + Deep-MARL</span></div>
-        <div class="telemetry-item">LATENCY: <span class="telemetry-val-cyan">6.8 ms</span></div>
-        <div class="telemetry-item">EVP STATUS: {evp_status_html}</div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-# ---------------------------------------------------------
-# Sidebar Controls: Road Geometry, Vision Source, & AI
+# Sidebar: Clean Configuration Panel
 # ---------------------------------------------------------
 with st.sidebar:
-    st.header("⚡ Control Console")
+    st.markdown("### ⚙️ System Configuration")
 
-    st.subheader("🛣️ Road Geometry Calibration")
+    st.markdown("**Road Geometry Layout**")
     selected_preset_name = st.selectbox(
-        "Active Road Layout",
+        "Select Road Intersection",
         list(ROAD_PRESETS.keys()),
         index=0,
-        help="Select or fix road layout geometry to match your real-world intersection or arterial road.",
+        label_visibility="collapsed",
     )
     active_lanes = ROAD_PRESETS[selected_preset_name]
 
-    st.divider()
-    st.subheader("📷 Vision Source Selection")
-    feed_mode = st.radio(
-        "Source Input Mode",
-        [
-            "🌐 2030 Cyber-City Digital Twin",
-            "📹 Live Hardware Webcam (OpenCV)",
-            "📸 Camera Snapshot (Browser)",
-            "📁 Upload Traffic Video (MP4/AVI)",
-        ],
-        index=0,
-    )
-
-    st.divider()
-    st.subheader("🚦 Signal Controller Algorithm")
+    st.markdown("**Signal Control Algorithm**")
     controller_choice = st.selectbox(
-        "Active Controller Policy",
+        "Active Controller",
         [
-            "Deep-MARL (2030 Quantum-Edge)",
-            "Webster's Optimal Delay (Civil Std)",
+            "Webster's Optimal Delay (Civil Standard)",
+            "Deep-MARL Multi-Agent AI",
             "Rule-Based Adaptive",
-            "Fixed-Time (2010 Legacy)",
+            "Fixed-Time (Legacy)",
         ],
         index=0,
+        label_visibility="collapsed",
     )
 
     st.divider()
-    st.subheader("Approach Traffic Demand")
+    st.markdown("**Speed Limit & Computer Vision**")
+    speed_limit = st.slider("Speed Limit (km/h)", 30, 80, 50, 5)
+    st.session_state.violation_detector.speed_limit_kmh = float(speed_limit)
+
+    conf_thresh = st.slider("Detection Confidence", 0.15, 0.85, 0.35, 0.05)
+
+    st.divider()
+    st.markdown("**Traffic Demand per Approach**")
     lane_keys = [l.lane_id for l in active_lanes]
     counts = {}
-    default_vals = {"North": 9, "East": 6, "South": 3, "West": 7, "Inbound Northbound": 12, "Outbound Southbound": 5}
+    default_vals = {"North": 8, "East": 5, "South": 3, "West": 6, "Inbound Northbound": 10, "Outbound Southbound": 5}
     for lk in lane_keys:
         def_v = default_vals.get(lk, 5)
-        counts[lk] = st.slider(f"{lk} approach volume", 0, 25, def_v)
+        counts[lk] = st.slider(f"{lk} approach", 0, 20, def_v)
 
     st.divider()
-    st.subheader("2030 Autonomous & Law Enforcement")
-    cav_rate = st.slider("Autonomous CAV Penetration Rate (%)", 10, 100, 82) / 100.0
-    speed_limit = st.slider("Speed Limit Enforcement (km/h)", 30, 80, 50, 5)
-    conf_thresh = st.slider("YOLO Detection Confidence", 0.15, 0.85, 0.35, 0.05)
-    weather = st.selectbox(
-        "Atmospheric Condition",
-        ["Clear / Optima", "Cyber-Rain", "Dense Urban Fog", "Solar Flare / Sensor Noise"],
-        index=0,
-    )
-
-    st.divider()
-    st.subheader("🚨 Emergency Vehicle Preemption (EVP)")
-    c1, c2 = st.columns(2)
-    with c1:
-        evp_target = st.selectbox("EVP Corridor", lane_keys)
-        if st.button("🚨 Dispatch Ambulance", use_container_width=True, type="primary"):
-            st.session_state.v2x_system.trigger_emergency_preemption(evp_target)
-            st.toast(f"EVP Override engaged on {evp_target}! Green wave clearing road.", icon="🚨")
-    with c2:
-        st.write("")
-        st.write("")
-        if st.button("Reset Normal Phase", use_container_width=True):
+    st.markdown("**Emergency Vehicle Preemption**")
+    evp_lane = st.selectbox("Corridor Target", lane_keys, label_visibility="collapsed")
+    col_btn1, col_btn2 = st.columns(2)
+    with col_btn1:
+        if st.button("🚨 Dispatch", use_container_width=True, type="primary"):
+            st.session_state.v2x_system.trigger_emergency_preemption(evp_lane)
+            st.toast(f"Emergency Preemption Active on {evp_lane}!", icon="🚨")
+    with col_btn2:
+        if st.button("Reset Phase", use_container_width=True):
             st.session_state.v2x_system.cancel_emergency_preemption()
-            st.toast("Corridor returned to Deep-MARL cooperative phase.", icon="✅")
+            st.toast("Normal signal matrix restored.", icon="✅")
 
 # ---------------------------------------------------------
-# Tabs Navigation
-# ---------------------------------------------------------
-tab_vision, tab_signals, tab_violations, tab_analytics, tab_eco, tab_capstone = st.tabs(
-    [
-        "👁️ Live Vision & Camera HUD",
-        "🚦 Signal Matrix & V2X Corridor",
-        "🚨 Law Enforcement & Violations",
-        "🔮 Predictive Horizon & Benchmark",
-        "🌿 Eco-Impact Telemetry",
-        "🎓 Capstone Project Dossier",
-    ]
-)
-
-# ---------------------------------------------------------
-# Core Frame & Detections Generation
+# Core Controller Execution & Data Processing
 # ---------------------------------------------------------
 def get_yolo(conf: float = 0.35):
     if st.session_state.yolo_detector is None or st.session_state.yolo_detector.confidence != conf:
-        with st.spinner("Initializing YOLOv8n Neural Engine..."):
+        with st.spinner("Initializing YOLOv8 Neural Engine..."):
             st.session_state.yolo_detector = YOLODetector("yolov8n.pt", confidence=conf)
     return st.session_state.yolo_detector
 
 
-# Generate detections matching the active road layout
+# Generate detections matching road layout
 detections, lane_metrics = make_demo_frame(0, counts, lanes_preset=active_lanes)
 
 # Track stationary states
 tracker = StationaryTracker()
 tracker.update(detections)
 
-# If EVP is active, inject high-priority emergency vehicle
+# Inject emergency vehicle if EVP is triggered
 if st.session_state.v2x_system.evp_active:
-    evp_lane = st.session_state.v2x_system.evp_lane
+    evp_target = st.session_state.v2x_system.evp_lane
     emergency_det = Detection(
         track_id=999,
         vehicle_class="emergency",
         confidence=0.99,
-        bbox=(380, 260, 420, 310) if "North" in evp_lane or "South" in evp_lane else (260, 380, 310, 420),
+        bbox=(380, 260, 420, 310) if "North" in evp_target or "South" in evp_target else (260, 380, 310, 420),
         centroid=(400.0, 285.0),
-        lane_id=evp_lane,
-        speed_px_frame=8.5,
-        speed_kmh=68.0,
+        lane_id=evp_target,
+        speed_px_frame=22.5,
+        speed_kmh=72.0,
         is_cav=True,
         is_emergency=True,
         v2x_id="EMERGENCY-EVP-01",
@@ -293,17 +265,17 @@ if st.session_state.v2x_system.evp_active:
 estimator = DensityEstimator(active_lanes)
 lane_metrics = estimator.estimate(detections)
 
-# Controller Execution
-if "Deep-MARL" in controller_choice:
+# Compute Signal Decision
+if "Webster" in controller_choice:
+    controller = WebsterController()
+    decision = controller.decide(lane_metrics)
+elif "Deep-MARL" in controller_choice:
     controller = DeepMARLController()
     decision = controller.decide(
         lane_metrics,
         evp_active=st.session_state.v2x_system.evp_active,
         evp_lane=st.session_state.v2x_system.evp_lane,
     )
-elif "Webster" in controller_choice:
-    controller = WebsterController()
-    decision = controller.decide(lane_metrics)
 elif "Rule-Based" in controller_choice:
     controller = RuleBasedController()
     decision = controller.decide(lane_metrics)
@@ -311,17 +283,16 @@ else:
     queues = {m.lane_id: m.weighted_density for m in lane_metrics}
     controller = FixedTimeController(green_seconds=30)
     chosen_lane, green_sec = controller.choose(queues)
-    decision = SignalDecision(chosen_lane, green_sec, "Fixed 30s rotation cycle", "Fixed-Time")
+    decision = SignalDecision(chosen_lane, green_sec, "Fixed 30s cycle", "Fixed-Time")
 
-# V2X telemetry
+# Update vehicle speeds & V2X telemetry
 detections, telemetry = st.session_state.v2x_system.process_detections(
     detections,
     active_lane=decision.lane_id,
     remaining_green_sec=decision.green_seconds,
-    cav_ratio_override=cav_rate,
 )
 
-# Violations check (Red light runners & speeding)
+# Detect violations (Red light runners & speeding)
 violations = st.session_state.violation_detector.check_violations(
     detections,
     active_lane=decision.lane_id,
@@ -329,286 +300,326 @@ violations = st.session_state.violation_detector.check_violations(
     speed_limit_kmh=float(speed_limit),
 )
 
-# Anomaly scanner
+# Anomaly scan & Eco computation
 incidents = st.session_state.anomaly_detector.scan(
     detections,
     lane_metrics,
     active_lane=decision.lane_id,
     evp_active=st.session_state.v2x_system.evp_active,
 )
-
-# Eco calculation
 eco = st.session_state.eco_tracker.compute(lane_metrics, controller_type=controller.name)
 
+# Calculate summary speed statistics
+speeds = [d.speed_kmh for d in detections if d.speed_kmh > 0]
+avg_speed = round(float(np.mean(speeds)), 1) if speeds else 0.0
+max_speed = round(float(np.max(speeds)), 1) if speeds else 0.0
+moving_count = len(speeds)
+queued_count = len(detections) - moving_count
+
 # ---------------------------------------------------------
-# TAB 1: Live Vision & Camera HUD
+# Top Header Bar
 # ---------------------------------------------------------
-with tab_vision:
-    col_hud, col_metrics = st.columns([1.7, 1.0])
+evp_active = st.session_state.v2x_system.evp_active
+status_badge_html = (
+    f'<span class="status-badge-evp">🚨 EMERGENCY PREEMPTION: {st.session_state.v2x_system.evp_lane}</span>'
+    if evp_active
+    else '<span class="status-badge">🟢 System Online · 30 FPS · Computer Vision Active</span>'
+)
 
-    with col_hud:
-        st.subheader(f"Intersection Vision HUD · [{selected_preset_name}]")
+st.markdown(
+    f"""
+    <div class="app-header">
+        <div>
+            <div class="app-title">AI Smart Traffic Management & Vehicle Speed Radar</div>
+            <div class="app-subtitle">Computer Vision Vehicle Speed Tracking · Webster Optimization · Intelligent Law Enforcement</div>
+        </div>
+        <div>
+            {status_badge_html}
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
-        if feed_mode == "🌐 2030 Cyber-City Digital Twin":
-            twin_frame = st.session_state.twin.generate_frame(
-                frame_index=0,
-                detections=detections,
-                active_lane=decision.lane_id,
-                evp_active=st.session_state.v2x_system.evp_active,
-            )
-            annotated = CyberHUDAnnotator.render_hud(
-                twin_frame,
-                detections=detections,
-                lanes=active_lanes,
-                signal_decision=decision,
-                telemetry=telemetry,
-                fps=32.4,
-                model_name="YOLOv8n + Deep-MARL 2030",
-            )
-            st.image(
-                cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB),
-                use_container_width=True,
-                caption=f"Road Geometry: {selected_preset_name} · Neural Detection HUD Overlay",
-            )
+# ---------------------------------------------------------
+# Top 4 Clean Metric Cards
+# ---------------------------------------------------------
+m1, m2, m3, m4 = st.columns(4)
 
-        elif feed_mode == "📹 Live Hardware Webcam (OpenCV)":
-            cam_idx = st.number_input("OpenCV Camera Device Index", min_value=0, max_value=4, value=0)
-            btn_col1, btn_col2 = st.columns(2)
-            with btn_col1:
-                run_cam = st.checkbox("🔴 Activate Live Camera Stream", value=False)
-            with btn_col2:
-                detect_yolo_cam = st.checkbox("Run YOLOv8 on Camera Frames", value=True)
+with m1:
+    st.markdown(
+        f"""
+        <div class="metric-card">
+            <div class="metric-label">Active Signal Phase</div>
+            <div class="metric-value metric-value-green">{decision.lane_id.upper()}</div>
+            <div class="metric-sub">Green Window: <strong>{decision.green_seconds} seconds</strong></div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-            video_placeholder = st.empty()
-            status_text = st.empty()
+with m2:
+    st.markdown(
+        f"""
+        <div class="metric-card">
+            <div class="metric-label">Average Vehicle Speed</div>
+            <div class="metric-value metric-value-cyan">{avg_speed} km/h</div>
+            <div class="metric-sub">Speed Limit: {speed_limit} km/h · Peak: {max_speed} km/h</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-            if run_cam:
-                cap = cv2.VideoCapture(int(cam_idx))
-                if not cap.isOpened():
-                    st.error(f"Cannot open camera device index {cam_idx}. Check camera privacy settings.")
-                else:
-                    detector = get_yolo(conf_thresh) if detect_yolo_cam else None
-                    frame_count = 0
-                    t_start = time.time()
+with m3:
+    st.markdown(
+        f"""
+        <div class="metric-card">
+            <div class="metric-label">Tracked Vehicles</div>
+            <div class="metric-value">{len(detections)}</div>
+            <div class="metric-sub">Moving: <strong>{moving_count}</strong> · Queued: <strong>{queued_count}</strong></div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-                    while run_cam and frame_count < 60:
-                        ret, raw_frame = cap.read()
-                        if not ret:
-                            status_text.warning("Failed to grab camera frame.")
-                            break
+with m4:
+    viol_count = len(violations)
+    viol_color = "style='color:#ef4444;'" if viol_count > 0 else ""
+    st.markdown(
+        f"""
+        <div class="metric-card">
+            <div class="metric-label">Traffic Violations</div>
+            <div class="metric-value" {viol_color}>{viol_count}</div>
+            <div class="metric-sub">Total e-Challan: <strong>₹{viol_count * 1000:,}</strong></div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
-                        frame_count += 1
-                        cam_detections = detections
-                        if detector is not None and frame_count % 2 == 0:
-                            cam_dets = detector.track(raw_frame, frame_count)
-                            if cam_dets:
-                                cam_detections = cam_dets
+# ---------------------------------------------------------
+# Main Workspace: 2 Clean Balanced Columns
+# ---------------------------------------------------------
+col_vision, col_radar = st.columns([1.5, 1.0])
 
-                        fps_val = frame_count / max(time.time() - t_start, 0.001)
+with col_vision:
+    st.markdown("#### 📹 Computer Vision Feed & Speed Radar")
+    
+    # Clean inline source selection pills
+    feed_mode = st.radio(
+        "Camera Mode",
+        ["🌐 Digital Twin Simulation", "📹 Live Hardware Webcam", "📸 Browser Snapshot", "📁 Upload Video"],
+        horizontal=True,
+        label_visibility="collapsed",
+    )
 
-                        annotated_cam = CyberHUDAnnotator.render_hud(
-                            raw_frame,
-                            detections=cam_detections,
-                            lanes=active_lanes,
-                            signal_decision=decision,
-                            telemetry=telemetry,
-                            fps=fps_val,
-                            model_name="YOLOv8n Camera Live",
-                        )
-                        video_placeholder.image(
-                            cv2.cvtColor(annotated_cam, cv2.COLOR_BGR2RGB),
-                            use_container_width=True,
-                            caption=f"Live Hardware Camera Feed [Camera #{cam_idx}] · {fps_val:.1f} FPS",
-                        )
-                        time.sleep(0.03)
+    if feed_mode == "🌐 Digital Twin Simulation":
+        twin_frame = st.session_state.twin.generate_frame(
+            frame_index=0,
+            detections=detections,
+            active_lane=decision.lane_id,
+            evp_active=evp_active,
+        )
+        annotated = CyberHUDAnnotator.render_hud(
+            twin_frame,
+            detections=detections,
+            lanes=active_lanes,
+            signal_decision=decision,
+            telemetry=telemetry,
+            fps=30.0,
+            speed_limit_kmh=float(speed_limit),
+        )
+        st.image(
+            cv2.cvtColor(annotated, cv2.COLOR_BGR2RGB),
+            use_container_width=True,
+            caption=f"Road Layout: {selected_preset_name} · Real-time vehicle speed (km/h) badge overlay",
+        )
 
-                    cap.release()
-                    status_text.info("Camera stream loop completed. Toggle switch to continue streaming.")
+    elif feed_mode == "📹 Live Hardware Webcam":
+        cam_c1, cam_c2 = st.columns([1.5, 1])
+        with cam_c1:
+            cam_idx = st.number_input("Webcam Device Index", min_value=0, max_value=4, value=0)
+        with cam_c2:
+            run_cam = st.checkbox("🔴 Start Live Stream", value=False)
+
+        video_placeholder = st.empty()
+        status_box = st.empty()
+
+        if run_cam:
+            cap = cv2.VideoCapture(int(cam_idx))
+            if not cap.isOpened():
+                st.error(f"Cannot access camera device {cam_idx}. Verify device connection.")
             else:
-                st.info("Click 'Activate Live Camera Stream' to stream from your local webcam directly through the 2030 computer vision pipeline.")
-
-        elif feed_mode == "📸 Camera Snapshot (Browser)":
-            st.write("Capture a frame from your connected camera for immediate neural vision analysis:")
-            camera_img = st.camera_input("Take a snapshot of traffic or intersection")
-            if camera_img is not None:
-                bytes_data = camera_img.getvalue()
-                cv_img = cv2.imdecode(np.frombuffer(bytes_data, np.uint8), cv2.IMREAD_COLOR)
-
                 detector = get_yolo(conf_thresh)
-                snap_detections = detector.track(cv_img, 0)
-                st.success(f"YOLOv8 detected {len(snap_detections)} objects in snapshot!")
+                frame_count = 0
+                t_start = time.time()
 
-                annotated_snap = CyberHUDAnnotator.render_hud(
-                    cv_img,
-                    detections=snap_detections if snap_detections else detections,
-                    lanes=active_lanes,
-                    signal_decision=decision,
-                    telemetry=telemetry,
-                    fps=28.0,
-                )
-                st.image(
-                    cv2.cvtColor(annotated_snap, cv2.COLOR_BGR2RGB),
-                    use_container_width=True,
-                    caption="Neural Object & Vehicle Bounding Boxes",
-                )
+                while run_cam and frame_count < 60:
+                    ret, raw_frame = cap.read()
+                    if not ret:
+                        status_box.warning("Unable to read camera frame.")
+                        break
 
-        elif feed_mode == "📁 Upload Traffic Video (MP4/AVI)":
-            uploaded_video = st.file_uploader("Upload MP4 / AVI / MOV Traffic Video", type=["mp4", "avi", "mov"])
-            if uploaded_video is not None:
-                tfile = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
-                tfile.write(uploaded_video.read())
-                tfile.close()
+                    frame_count += 1
+                    cam_dets = detections
+                    if frame_count % 2 == 0 and detector is not None:
+                        detected = detector.track(raw_frame, frame_count)
+                        if detected:
+                            cam_dets = detected
 
-                cap = cv2.VideoCapture(tfile.name)
-                ret, first_frame = cap.read()
-                cap.release()
+                    fps_val = frame_count / max(time.time() - t_start, 0.001)
 
-                if ret:
-                    detector = get_yolo(conf_thresh)
-                    vid_dets = detector.track(first_frame, 0)
-                    annotated_vid = CyberHUDAnnotator.render_hud(
-                        first_frame,
-                        detections=vid_dets,
+                    annotated_cam = CyberHUDAnnotator.render_hud(
+                        raw_frame,
+                        detections=cam_dets,
                         lanes=active_lanes,
                         signal_decision=decision,
                         telemetry=telemetry,
+                        fps=fps_val,
+                        speed_limit_kmh=float(speed_limit),
                     )
-                    st.image(
-                        cv2.cvtColor(annotated_vid, cv2.COLOR_BGR2RGB),
+                    video_placeholder.image(
+                        cv2.cvtColor(annotated_cam, cv2.COLOR_BGR2RGB),
                         use_container_width=True,
-                        caption=f"Uploaded Traffic Video Analysis · {len(vid_dets)} Vehicles Detected",
+                        caption=f"Hardware Camera Live Stream · {fps_val:.1f} FPS",
                     )
-                try:
-                    os.unlink(tfile.name)
-                except Exception:
-                    pass
+                    time.sleep(0.03)
 
-    with col_metrics:
-        st.subheader("Signal State & Telemetry")
-        m1, m2 = st.columns(2)
-        with m1:
-            st.metric("Active Approach", decision.lane_id)
-        with m2:
-            st.metric("Green Window", f"{decision.green_seconds}s")
-
-        if decision.evp_preemption:
-            st.error(decision.reason)
+                cap.release()
+                status_box.info("Stream loop paused. Toggle checkbox to resume live stream.")
         else:
-            st.success(decision.reason)
+            st.info("Check 'Start Live Stream' above to stream directly from your physical webcam.")
 
-        st.divider()
-        st.subheader("GLOSA Advisory Broadcast")
-        st.metric(
-            "Target Cruise Speed",
-            f"{telemetry.glosa_advisory_kmh} km/h",
-            help="Optimal speed broadcasted to connected autonomous vehicles to eliminate stopping at red lights.",
-        )
-        st.caption(f"V2X Connected ratio: {telemetry.connected_ratio_pct}% · Active platoons: {telemetry.platoons_active}")
+    elif feed_mode == "📸 Browser Snapshot":
+        camera_img = st.camera_input("Capture live snapshot from browser camera")
+        if camera_img is not None:
+            bytes_data = camera_img.getvalue()
+            cv_img = cv2.imdecode(np.frombuffer(bytes_data, np.uint8), cv2.IMREAD_COLOR)
 
-        st.divider()
-        st.subheader("Lane Intelligence Matrix")
-        metrics_df = pd.DataFrame(
-            [
-                {
-                    "Approach": m.lane_id,
-                    "Vehicles": m.vehicle_count,
-                    "Queue (m)": m.queue_length_m,
-                    "Occupancy": f"{m.occupancy_pct}%",
-                    "Flow/min": m.flow_veh_per_min,
-                    "CAVs": getattr(m, "cav_count", 0),
-                }
-                for m in lane_metrics
-            ]
-        ).set_index("Approach")
-        st.dataframe(metrics_df, use_container_width=True)
+            detector = get_yolo(conf_thresh)
+            snap_detections = detector.track(cv_img, 0)
 
-# ---------------------------------------------------------
-# TAB 2: Signal Matrix & V2X Corridor
-# ---------------------------------------------------------
-with tab_signals:
-    st.subheader("Autonomous Corridor & V2X Mesh Orchestration")
-    vcol1, vcol2, vcol3, vcol4 = st.columns(4)
-    with vcol1:
-        st.metric("V2X Mesh Throughput", f"{telemetry.v2x_packets_per_sec} pkts/s")
-    with vcol2:
-        st.metric("C-V2X Latency", f"{telemetry.network_latency_ms} ms")
-    with vcol3:
-        st.metric("Autonomous CAV Platoons", telemetry.platoons_active)
-    with vcol4:
-        st.metric("Connected Fleet Rate", f"{telemetry.connected_ratio_pct}%")
+            annotated_snap = CyberHUDAnnotator.render_hud(
+                cv_img,
+                detections=snap_detections if snap_detections else detections,
+                lanes=active_lanes,
+                signal_decision=decision,
+                telemetry=telemetry,
+                speed_limit_kmh=float(speed_limit),
+            )
+            st.image(
+                cv2.cvtColor(annotated_snap, cv2.COLOR_BGR2RGB),
+                use_container_width=True,
+                caption=f"Snapshot Analysis · {len(snap_detections)} Objects Detected",
+            )
 
-    st.divider()
-    scol1, scol2 = st.columns([1.2, 1.0])
-    with scol1:
-        st.subheader(f"Signal Phase Matrix [{controller.name}]")
-        phases = [l.lane_id for l in active_lanes]
-        phase_colors = ["#00ff88" if p == decision.lane_id else "#ff3366" for p in phases]
-        phase_status = ["GREEN (FLOW)" if p == decision.lane_id else "RED (HOLD)" for p in phases]
-        durations = [decision.green_seconds if p == decision.lane_id else 45 for p in phases]
+    elif feed_mode == "📁 Upload Video":
+        uploaded_video = st.file_uploader("Upload Traffic Video (.mp4 / .avi / .mov)", type=["mp4", "avi", "mov"])
+        if uploaded_video is not None:
+            tfile = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
+            tfile.write(uploaded_video.read())
+            tfile.close()
 
-        fig = go.Figure(
-            data=[
-                go.Bar(
-                    x=phases,
-                    y=durations,
-                    marker_color=phase_colors,
-                    text=phase_status,
-                    textposition="auto",
+            cap = cv2.VideoCapture(tfile.name)
+            ret, first_frame = cap.read()
+            cap.release()
+
+            if ret:
+                detector = get_yolo(conf_thresh)
+                vid_dets = detector.track(first_frame, 0)
+                annotated_vid = CyberHUDAnnotator.render_hud(
+                    first_frame,
+                    detections=vid_dets,
+                    lanes=active_lanes,
+                    signal_decision=decision,
+                    telemetry=telemetry,
+                    speed_limit_kmh=float(speed_limit),
                 )
-            ]
-        )
-        fig.update_layout(
-            paper_bgcolor="rgba(0,0,0,0)",
-            plot_bgcolor="rgba(0,0,0,0)",
-            font_color="#cbd5e1",
-            yaxis_title="Phase Allocation (seconds)",
-            margin=dict(l=10, r=10, t=25, b=10),
-            height=300,
-        )
-        st.plotly_chart(fig, use_container_width=True)
+                st.image(
+                    cv2.cvtColor(annotated_vid, cv2.COLOR_BGR2RGB),
+                    use_container_width=True,
+                    caption=f"Uploaded Video Frame Analysis · {len(vid_dets)} Vehicles Detected",
+                )
+            try:
+                os.unlink(tfile.name)
+            except Exception:
+                pass
 
-    with scol2:
-        st.subheader("Green Light Optimal Speed Advisory (GLOSA)")
-        st.write(
-            """
-            In the 2030 V2I paradigm, traffic signals directly broadcast optimal approach speeds 
-            to incoming autonomous fleets. Vehicles modulate cruising velocity to pass on green with 
-            **zero acceleration losses or brake wear**.
-            """
+with col_radar:
+    st.markdown("#### ⚡ Live Vehicle Speed & Telemetry")
+    
+    # Real-time Vehicle Speed Table
+    vehicle_rows = []
+    for d in detections:
+        spd = d.speed_kmh
+        if d.is_emergency:
+            status_tag = "🚨 EMERGENCY"
+        elif spd == 0:
+            status_tag = "QUEUED"
+        elif spd > speed_limit:
+            status_tag = "⚠️ SPEEDING"
+        else:
+            status_tag = "NORMAL"
+
+        vehicle_rows.append(
+            {
+                "Track ID": f"#{d.track_id:02d}",
+                "Vehicle Class": d.vehicle_class.upper(),
+                "Speed": f"{spd:.1f} km/h",
+                "Approach": d.lane_id or "Active",
+                "Status": status_tag,
+            }
         )
-        glosa_df = pd.DataFrame(
-            [
-                {
-                    "Vehicle Track": f"CAV #{d.track_id:02d}",
-                    "Type": d.vehicle_class.upper(),
-                    "Approach": d.lane_id or "Active",
-                    "Current Speed": f"{d.speed_kmh:.1f} km/h",
-                    "GLOSA Advisory": f"{d.glosa_speed_kmh:.1f} km/h",
-                }
-                for d in detections[:6]
-            ]
-        )
-        st.dataframe(glosa_df, use_container_width=True)
+
+    v_df = pd.DataFrame(vehicle_rows)
+    st.dataframe(v_df, use_container_width=True, height=280)
+
+    # Approach Lane Metrics Table
+    st.markdown("#### 📊 Approach Density & Queues")
+    lane_table = pd.DataFrame(
+        [
+            {
+                "Approach": m.lane_id,
+                "Vehicles": m.vehicle_count,
+                "Queue (m)": f"{m.queue_length_m:.1f}m",
+                "Flow/min": m.flow_veh_per_min,
+                "Occupancy": f"{m.occupancy_pct}%",
+            }
+            for m in lane_metrics
+        ]
+    ).set_index("Approach")
+    st.dataframe(lane_table, use_container_width=True, height=180)
 
 # ---------------------------------------------------------
-# TAB 3: Law Enforcement & Traffic Violations (e-Challan)
+# Secondary Tabs: Decluttered & Professional
 # ---------------------------------------------------------
-with tab_violations:
-    st.subheader("🚨 Intelligent Law Enforcement & Violation Radar (e-Challan)")
-    st.caption("Automated computer vision detection of red-light runners and speeding offenders at intersection stop lines.")
+st.divider()
 
-    v_metric1, v_metric2, v_metric3 = st.columns(3)
-    with v_metric1:
-        st.metric("Total Violations Logged", len(violations))
-    with v_metric2:
+t1, t2, t3, t4, t5 = st.tabs(
+    [
+        "⚖️ Law Enforcement (e-Challan)",
+        "🚦 Signal Matrix & Optimization",
+        "🔮 Predictive Forecasting & Benchmark",
+        "🌿 Carbon & Eco-Footprint",
+        "🎓 Capstone Project Dossier",
+    ]
+)
+
+# TAB 1: Law Enforcement & Violations
+with t1:
+    st.markdown("### 🚨 Intelligent Law Enforcement & Violation Radar (e-Challan)")
+    st.caption("Automated computer vision detection of red light runners and speeding offenders at intersection stop lines.")
+
+    v1, v2, v3 = st.columns(3)
+    with v1:
+        st.metric("Total Violations Flagged", len(violations))
+    with v2:
         st.metric("Active Speed Limit", f"{speed_limit} km/h")
-    with v_metric3:
-        total_fines = sum(v.fine_amount_inr for v in violations)
-        st.metric("Total Penalties Generated", f"₹{total_fines:,}")
+    with v3:
+        total_penalties = sum(v.fine_amount_inr for v in violations)
+        st.metric("Total Penalties Generated", f"₹{total_penalties:,}")
 
-    st.divider()
     if violations:
-        v_table = pd.DataFrame(
+        v_report = pd.DataFrame(
             [
                 {
                     "Citation ID": v.violation_id,
@@ -621,184 +632,97 @@ with tab_violations:
                     "Penalty Amount": f"₹{v.fine_amount_inr}",
                     "Status": v.evidence_status,
                 }
-                for v in reversed(violations[-10:])
+                for v in reversed(violations[-8:])
             ]
         ).set_index("Citation ID")
-        st.dataframe(v_table, use_container_width=True)
+        st.dataframe(v_report, use_container_width=True)
     else:
-        st.success("No active traffic violations detected. Compliance rate: 100%.")
+        st.success("No active violations detected. 100% traffic compliance across all corridors.")
 
-# ---------------------------------------------------------
-# TAB 4: Predictive Horizon & 4-Generation Benchmark
-# ---------------------------------------------------------
-with tab_analytics:
-    st.subheader("🔮 30-Minute AI Traffic Horizon Forecasting")
-    st.caption("Quantum time-series forecasting model estimating approach saturation curves across the urban grid.")
+# TAB 2: Signal Matrix & Optimization
+with t2:
+    st.markdown("### 🚦 Signal Phase Allocation & Webster Optimization")
+    st.info(f"**Controller Reasoning:** {decision.reason}")
 
-    forecast_data = st.session_state.forecaster.predict_horizon(
-        counts, weather=weather, horizon_minutes=30
+    c_phases = [l.lane_id for l in active_lanes]
+    c_colors = ["#10b981" if p == decision.lane_id else "#ef4444" for p in c_phases]
+    c_status = ["GREEN (FLOW)" if p == decision.lane_id else "RED (HOLD)" for p in c_phases]
+    c_times = [decision.green_seconds if p == decision.lane_id else 45 for p in c_phases]
+
+    fig_phase = go.Figure(
+        data=[
+            go.Bar(
+                x=c_phases,
+                y=c_times,
+                marker_color=c_colors,
+                text=c_status,
+                textposition="auto",
+            )
+        ]
     )
-    f_df = pd.DataFrame(forecast_data).set_index("Minute")
-
-    fig_forecast = px.line(
-        f_df,
-        markers=True,
-        title=f"Predicted Demand Curve (Atmosphere: {weather})",
-    )
-    fig_forecast.update_layout(
+    fig_phase.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font_color="#cbd5e1",
-        yaxis_title="Estimated Vehicle Inflow Rate",
-        margin=dict(l=10, r=10, t=40, b=10),
-        height=320,
+        font_color="#e2e8f0",
+        yaxis_title="Phase Allocation (seconds)",
+        margin=dict(l=10, r=10, t=20, b=10),
+        height=280,
     )
-    st.plotly_chart(fig_forecast, use_container_width=True)
+    st.plotly_chart(fig_phase, use_container_width=True)
 
-    # Dynamic Tidal Lane Reversal Assessment
-    tidal = st.session_state.forecaster.evaluate_tidal_lane_reversal(counts)
-    st.divider()
-    tcol1, tcol2 = st.columns([1.5, 1.0])
-    with tcol1:
-        st.subheader("Dynamic Tidal Lane Reversal (Reversible Corridor)")
-        if tidal["active"]:
-            st.warning(f"**Tidal Imbalance Detected on {tidal['corridor']}** ({tidal['asymmetry_ratio']}% asymmetric load)")
-            st.info(f"**Recommended Action:** {tidal['recommended_action']} · **Estimated Grid Delay Reduction:** -{tidal['delay_reduction_pct']}%")
-        else:
-            st.success("Corridor Traffic Symmetrical: Standard balanced phase active.")
-    with tcol2:
-        st.metric("Asymmetry Ratio", f"{tidal['asymmetry_ratio']}%")
-        st.metric("Delay Reduction Potential", f"-{tidal['delay_reduction_pct']}%")
+# TAB 3: Predictive Forecasting & Benchmark
+with t3:
+    st.markdown("### 🔮 30-Minute Demand Forecast & Multi-Controller Benchmark")
+    
+    forecast_data = st.session_state.forecaster.predict_horizon(counts, horizon_minutes=30)
+    f_df = pd.DataFrame(forecast_data).set_index("Minute")
 
-    st.divider()
-    st.subheader("Multi-Generational AI Controller Benchmark (2010 vs 2015 vs 2020 vs 2024 vs 2030)")
-    if st.button("🚀 Run Comprehensive Controller Benchmark", type="primary"):
-        with st.spinner("Training Q-learning policy and running multi-controller simulation..."):
-            results, rewards = evaluate(
-                {metric.lane_id: metric.weighted_density for metric in lane_metrics}
-            )
+    fig_line = px.line(
+        f_df,
+        markers=True,
+        title="30-Minute Projected Vehicle Arrival Curve",
+    )
+    fig_line.update_layout(
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        font_color="#e2e8f0",
+        margin=dict(l=10, r=10, t=40, b=10),
+        height=280,
+    )
+    st.plotly_chart(fig_line, use_container_width=True)
+
+    if st.button("🚀 Run Multi-Controller Benchmark Simulation (900s)", type="primary"):
+        with st.spinner("Simulating traffic flow across 5 controller paradigms..."):
+            results, _ = evaluate({m.lane_id: m.weighted_density for m in lane_metrics})
         b_df = pd.DataFrame(results).set_index("Controller")
         st.dataframe(b_df, use_container_width=True)
 
-        bcol1, bcol2 = st.columns(2)
-        with bcol1:
-            st.subheader("Average Intersection Delay (s)")
-            fig_bar = px.bar(
-                b_df.reset_index(),
-                x="Controller",
-                y="Average wait (s)",
-                color="Generation Era",
-            )
-            fig_bar.update_layout(
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)",
-                font_color="#cbd5e1",
-                height=280,
-            )
-            st.plotly_chart(fig_bar, use_container_width=True)
-
-        with bcol2:
-            st.subheader("CO2 Emissions Reduction (%)")
-            fig_co2 = px.bar(
-                b_df.reset_index(),
-                x="Controller",
-                y="CO2 Reduction (%)",
-                color="Generation Era",
-            )
-            fig_co2.update_layout(
-                paper_bgcolor="rgba(0,0,0,0)",
-                plot_bgcolor="rgba(0,0,0,0)",
-                font_color="#cbd5e1",
-                height=280,
-            )
-            st.plotly_chart(fig_co2, use_container_width=True)
-
-# ---------------------------------------------------------
-# TAB 5: Eco-Impact Telemetry
-# ---------------------------------------------------------
-with tab_eco:
-    st.subheader("🌿 Real-Time Urban Eco-Footprint & Carbon Abatement")
-    st.caption("Quantifying avoided idling, fuel waste, and EV regenerative braking conservation relative to 2010 static signals.")
-
-    ecol1, ecol2, ecol3, ecol4 = st.columns(4)
-    with ecol1:
-        st.metric("Avoided CO2 Emissions", f"{eco.co2_saved_kg} kg CO2e", delta=f"+{eco.co2_saved_kg:.1f} kg")
-    with ecol2:
+# TAB 4: Carbon & Eco-Footprint
+with t4:
+    st.markdown("### 🌿 Urban Eco-Footprint & Emissions Telemetry")
+    e1, e2, e3, e4 = st.columns(4)
+    with e1:
+        st.metric("CO2 Avoided", f"{eco.co2_saved_kg} kg", delta=f"+{eco.co2_saved_kg:.1f} kg")
+    with e2:
         st.metric("Fuel Conserved", f"{eco.fuel_saved_liters} Liters", delta=f"+{eco.fuel_saved_liters:.1f} L")
-    with ecol3:
-        st.metric("EV Battery Saved", f"{eco.ev_energy_saved_kwh} kWh", delta=f"+{eco.ev_energy_saved_kwh:.1f} kWh")
-    with ecol4:
-        st.metric("Noise Pollution Dampening", f"-{eco.noise_reduction_db} dB", delta=f"-{eco.noise_reduction_db} dB")
+    with e3:
+        st.metric("EV Energy Saved", f"{eco.ev_energy_saved_kwh} kWh", delta=f"+{eco.ev_energy_saved_kwh:.1f} kWh")
+    with e4:
+        st.metric("Noise Dampening", f"-{eco.noise_reduction_db} dB", delta=f"-{eco.noise_reduction_db} dB")
 
-    st.divider()
-    st.write(
-        """
-        ### Smart Grid & Clean Air Impact
-        By synchronizing autonomous vehicle platoons with Deep-MARL predictive green waves, 
-        stop-and-go energy dissipation is reduced by **89%**. 
-        Electric Autonomous Shuttles maintain regenerative momentum, and traditional combustion 
-        idling emissions at intersections are virtually eliminated.
-        """
-    )
-
-# ---------------------------------------------------------
-# TAB 6: Capstone Project Dossier (For Academic Evaluation)
-# ---------------------------------------------------------
-with tab_capstone:
-    st.subheader("🎓 Final Year Capstone Project Dossier")
+# TAB 5: Capstone Dossier
+with t5:
+    st.markdown("### 🎓 Capstone Academic Dossier & Formulations")
     st.markdown(
+        r"""
+        #### 1. Webster's Minimum Delay Formulation (1958)
+        $$C_0 = \frac{1.5 L + 5}{1 - Y}$$
+        - $L = \sum l_i$: Total lost time per cycle ($\approx 16\text{s}$ for 4 phases).
+        - $Y = \sum \frac{q_i}{s_i}$: Sum of approach arrival flows divided by saturation flow ($s_i = 1800\text{ veh/hr}$).
+        - Effective green time: $g_i = \frac{y_i}{Y} (C_0 - L)$.
+
+        #### 2. Speed Formulation via Euclidean Displacement
+        $$v_{\text{km/h}} = \left( \frac{\sqrt{(x_t - x_{t-1})^2 + (y_t - y_{t-1})^2}}{\kappa} \times f \right) \times 3.6$$
+        where $\kappa = 12.0\text{ pixels/meter}$ and $f = 30\text{ fps}$.
         """
-        <div class="academic-banner">
-            <strong>Project Title:</strong> AI-Based Smart Traffic Management System Using Computer Vision & Multi-Agent Reinforcement Learning<br>
-            <strong>Domain:</strong> Intelligent Transportation Systems (ITS) · Computer Vision · Deep RL · V2X Communication
-        </div>
-        """,
-        unsafe_allow_html=True,
     )
-
-    with st.expander("📌 1. Abstract & Problem Statement", expanded=True):
-        st.markdown(
-            """
-            **Abstract:** Traditional urban traffic control relies on pre-timed fixed rotation cycles (Webster 1958) 
-            or basic inductive loop sensors, causing catastrophic bottlenecks, unnecessary vehicle idling, fuel wastage, 
-            and delayed emergency response services. This project implements an intelligent, closed-loop cybernetic 
-            traffic management system utilizing **YOLOv8** computer vision for real-time vehicle classification, 
-            **ByteTrack** for spatial-temporal trajectory tracking, and **Deep-MARL** (Multi-Agent Reinforcement Learning) 
-            cooperative control. The architecture achieves dynamic green phase allocation, **Green Light Optimal Speed 
-            Advisory (GLOSA)** broadcast via V2X, automated red-light runner citation generation, and instant Emergency 
-            Vehicle Preemption (EVP).
-            """
-        )
-
-    with st.expander("📐 2. Mathematical Formulations & Algorithms", expanded=True):
-        st.markdown(
-            r"""
-            #### A. Webster's Minimum Delay Cycle Time Formulation:
-            $$C_0 = \frac{1.5 L + 5}{1 - Y}$$
-            where:
-            - $L = \sum l_i$: Total lost time per cycle across all phases.
-            - $Y = \sum y_i = \sum \frac{q_i}{s_i}$: Sum of critical flow ratios (approach arrival flow $q_i$ divided by saturation flow $s_i \approx 1800\text{ veh/hr}$).
-            - Effective green time distribution:
-            $$g_i = \frac{y_i}{Y} (C_0 - L)$$
-
-            #### B. Deep-MARL Cooperative Utility Bellman Formulation:
-            $$Q_{t+1}(s, a) = Q_t(s, a) + \alpha \left[ R_{t+1} + \gamma \max_{a'} Q_t(s', a') - Q_t(s, a) \right]$$
-            The reward function penalizes queue accumulation, delay, and emergency hindrance:
-            $$R_t = -\sum_{i=1}^N \left( w_i \cdot \text{Queue}_i + \beta \cdot \text{Delay}_i \right) + \mathbf{1}_{\text{EVP}} \cdot \Omega_{\text{priority}}$$
-            """
-        )
-
-    with st.expander("🏗️ 3. System Architecture & Data Flow"):
-        st.markdown(
-            """
-            ```
-            [ Camera / Webcam Feed ] ──> [ YOLOv8 Object Detection ] ──> [ ByteTrack ID Persistence ]
-                                                                                   │
-                                                                                   ▼
-            [ Signal Phase Matrix ] <── [ Deep-MARL / Webster Engine ] <── [ Density & Queue Estimator ]
-                     │                                                             │
-                     ▼                                                             ▼
-            [ V2X GLOSA Broadcast ]                                    [ Violation & Radar Engine ]
-            ```
-            """
-        )
