@@ -4,7 +4,16 @@ from dataclasses import dataclass
 
 from .models import Detection, LaneMetrics
 
-WEIGHTS = {"car": 1.0, "bus": 2.5, "truck": 2.5, "motorcycle": 0.5, "bicycle": 0.5}
+WEIGHTS = {
+    "car": 1.0,
+    "bus": 2.5,
+    "truck": 2.5,
+    "motorcycle": 0.5,
+    "bicycle": 0.5,
+    "autonomous_pod": 0.8,
+    "emergency": 3.0,
+    "ev_shuttle": 1.8,
+}
 
 
 @dataclass
@@ -52,15 +61,23 @@ class DensityEstimator:
             if stationary:
                 farthest = max(abs(d.centroid[1] - lane.stop_line_y) for d in stationary)
                 queue_length = farthest / self.pixels_per_meter
+
+            cav_count = sum(1 for d in current if getattr(d, "is_cav", False))
+            emergency_present = any(
+                d.vehicle_class == "emergency" or getattr(d, "is_emergency", False) for d in current
+            )
+
             metrics.append(
                 LaneMetrics(
                     lane_id=lane.lane_id,
                     vehicle_count=len(current),
-                    weighted_density=round(sum(WEIGHTS[d.vehicle_class] for d in current), 2),
+                    weighted_density=round(sum(WEIGHTS.get(d.vehicle_class, 1.0) for d in current), 2),
                     queue_length_m=round(queue_length, 1),
                     stationary_count=len(stationary),
-                    occupancy_pct=round(min(100.0, sum(WEIGHTS[d.vehicle_class] for d in current) * 7.5), 1),
+                    occupancy_pct=round(min(100.0, sum(WEIGHTS.get(d.vehicle_class, 1.0) for d in current) * 7.5), 1),
                     flow_veh_per_min=round(len(current) * 60 / max(self.frame_rate, 1), 1),
+                    cav_count=cav_count,
+                    emergency_present=emergency_present,
                 )
             )
         return metrics
