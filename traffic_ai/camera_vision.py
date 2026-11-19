@@ -40,7 +40,12 @@ class CyberHUDAnnotator:
         fps: float = 30.0,
         speed_limit_kmh: float = 50.0,
         model_name: str = "YOLOv8 + Speed Radar",
+        **kwargs,
     ) -> np.ndarray:
+        """Render HUD overlay on a video frame. Fully resilient with **kwargs."""
+        # Allow speed_limit_kmh or speed_limit from kwargs
+        effective_limit = kwargs.get("speed_limit", speed_limit_kmh)
+
         out = frame.copy()
         h, w = out.shape[:2]
 
@@ -98,7 +103,7 @@ class CyberHUDAnnotator:
                 speed_color = COLOR_PALETTE["speed_idle"]
                 badge_title = f"{det.vehicle_class.upper()} #{det.track_id}"
                 speed_str = "0 km/h (QUEUED)"
-            elif speed > speed_limit_kmh:
+            elif speed > effective_limit:
                 speed_color = COLOR_PALETTE["speed_fast"]
                 badge_title = f"{det.vehicle_class.upper()} #{det.track_id}"
                 speed_str = f"{speed:.0f} km/h [SPEEDING]"
@@ -179,7 +184,7 @@ class CyberHUDAnnotator:
         # Speed limit indicator center
         cv2.putText(
             out,
-            f"SPEED LIMIT: {speed_limit_kmh:.0f} km/h",
+            f"SPEED LIMIT: {effective_limit:.0f} km/h",
             (w // 2 - 70, 20),
             cv2.FONT_HERSHEY_DUPLEX,
             0.40,
@@ -218,18 +223,13 @@ class Synthetic2030Twin:
         evp_active: bool = False,
     ) -> np.ndarray:
         w, h = self.width, self.height
-        # Modern asphalt background (deep slate gray)
+        road_surface_color = (36, 42, 52)
         frame = np.full((h, w, 3), (24, 28, 35), dtype=np.uint8)
 
-        # 4-Way Road Surface (clean, smooth asphalt)
-        road_surface_color = (36, 42, 52)
         cv2.rectangle(frame, (250, 0), (550, h), road_surface_color, -1)
         cv2.rectangle(frame, (0, 250), (w, 550), road_surface_color, -1)
-
-        # Center intersection junction
         cv2.rectangle(frame, (250, 250), (550, 550), (42, 49, 60), -1)
 
-        # Clean road curbs / boundary edges
         curb_color = (70, 80, 95)
         cv2.line(frame, (250, 0), (250, 250), curb_color, 2)
         cv2.line(frame, (550, 0), (550, 250), curb_color, 2)
@@ -240,7 +240,6 @@ class Synthetic2030Twin:
         cv2.line(frame, (550, 250), (w, 250), curb_color, 2)
         cv2.line(frame, (550, 550), (w, 550), curb_color, 2)
 
-        # White crosswalks
         cw_color = (85, 95, 110)
         for x in range(260, 540, 28):
             cv2.rectangle(frame, (x, 232), (x + 16, 246), cw_color, -1)
@@ -249,7 +248,6 @@ class Synthetic2030Twin:
             cv2.rectangle(frame, (232, y), (246, y + 16), cw_color, -1)
             cv2.rectangle(frame, (554, y), (568, y + 16), cw_color, -1)
 
-        # Dashed road center divider lines
         dash_len = 16
         gap = 14
         dash_color = (200, 200, 210)
@@ -262,7 +260,6 @@ class Synthetic2030Twin:
         for x in range(570, w, dash_len + gap):
             cv2.line(frame, (x, 400), (x + dash_len, 400), dash_color, 1)
 
-        # Stop lines (Solid Green for active corridor, Solid Red for stopped corridors)
         stop_lines = {
             "North": ((250, 248), (400, 248)),
             "South": ((400, 552), (550, 552)),
@@ -274,17 +271,14 @@ class Synthetic2030Twin:
             s_color = (60, 210, 100) if is_green else (50, 50, 220)
             cv2.line(frame, p1, p2, s_color, 3, cv2.LINE_AA)
 
-        # Draw vehicle bodies on the road
         for det in detections:
             x1, y1, x2, y2 = det.bbox
             is_emergency = det.is_emergency or det.vehicle_class == "emergency"
             vcolor = (50, 40, 245) if is_emergency else (55, 65, 80)
 
-            # Sleek vehicle chassis
             cv2.rectangle(frame, (x1, y1), (x2, y2), vcolor, -1)
             cv2.rectangle(frame, (x1, y1), (x2, y2), (180, 190, 205), 1)
 
-            # Windshield
             w_inset = max(2, (x2 - x1) // 5)
             h_inset = max(2, (y2 - y1) // 4)
             cv2.rectangle(
